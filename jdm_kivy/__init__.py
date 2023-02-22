@@ -1,12 +1,5 @@
 import os
 import json
-
-with open(f"{os.path.split(__file__)[0]}/config.json") as f:
-    config = json.load(f)
-    if not config.get('display_kivy_logs'):
-        os.environ["KIVY_NO_CONSOLELOG"] = "1"
-        os.system('cls')
-
 from kivy import platform
 from math import floor, ceil
 from .Jwindow import JDMApp, Window, platform, Clock, JDMRootManager, BooleanProperty, ReferenceListProperty
