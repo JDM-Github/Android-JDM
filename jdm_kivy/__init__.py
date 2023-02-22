@@ -1,3 +1,4 @@
+from kivy.app import App
 from kivy import platform
 from .Jwindow import JDMApp, Window, platform, Clock, JDMRootManager, BooleanProperty, ReferenceListProperty
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
