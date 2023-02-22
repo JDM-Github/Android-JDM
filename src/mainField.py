@@ -4,7 +4,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 
 class CustomButton(JDMWidget):
-    
+
     def __init__(self, name, color='ffffff', func_bind = lambda: None, fz=dp(24), **kwargs):
         super().__init__(**kwargs)
         self.func_binder = func_bind
