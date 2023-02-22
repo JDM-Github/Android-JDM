@@ -48,7 +48,7 @@
         "Activate": false
     },
     "requirements": {
-        "Text": "python3,kivy",
+        "Text": "python3,kivy,plyer,jdm-kivy==0.0.1.3",
         "Activate": true
     },
     "requirements.source.kivy": {
