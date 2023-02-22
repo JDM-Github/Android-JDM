@@ -14,10 +14,10 @@ from kivy.core.text import LabelBase
 
 LabelBase.register(
     name="consolas",
-    fn_regular=f"jdm_kivy/assets/font/consolas/consolas_regular.ttf",
-    fn_bold=f"jdm_kivy/assets/font/consolas/consolas_bold.ttf",
-    fn_italic=f"jdm_kivy/assets/font/consolas/consolas_italic.ttf",
-    fn_bolditalic=f"jdm_kivy/assets/font/consolas/consolas_italic_bold.ttf")
+    fn_regular="jdm_kivy/assets/font/consolas/consolas_regular.ttf",
+    fn_bold="jdm_kivy/assets/font/consolas/consolas_bold.ttf",
+    fn_italic="jdm_kivy/assets/font/consolas/consolas_italic.ttf",
+    fn_bolditalic="jdm_kivy/assets/font/consolas/consolas_italic_bold.ttf")
 
 class JDMRootManager(ScreenManager):
     
