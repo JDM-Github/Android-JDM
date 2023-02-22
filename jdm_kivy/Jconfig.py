@@ -6,7 +6,6 @@ class JDMConfig:
     __original_config = {
         'display_fps' : False,
         'root_clock' : False,
-        'display_kivy_logs': False
     }
     
     @staticmethod
