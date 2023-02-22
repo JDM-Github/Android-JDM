@@ -1,4 +1,5 @@
 from jdm_kivy import *
+from kivy.app import App
 from src import MainField
 
 if __name__ == "__main__":
