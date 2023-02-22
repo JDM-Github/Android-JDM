@@ -4,7 +4,7 @@
 title = JDM-Calculator
 
 # (str) Package name
-package.name = jdmCalculator
+package.name = JDM_Calculator
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.jdm.calculator
@@ -37,7 +37,7 @@ version = 0.0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,plyer,jdm-kivy==0.0.1.3
+requirements = python3,kivy,plyer
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -60,7 +60,7 @@ orientation = portrait
 #
 
 #
-# author = ï¿½ Copyright Info
+# author = © Copyright Info
 
 # change the major version of python used by the app
 osx.python_version = 3
