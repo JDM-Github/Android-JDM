@@ -14,7 +14,7 @@ def JDM_png_to_pdf(text: str, name: str):
     im.close()
 
 def JDM_getColor(string: str) -> str:
-    with open("jdm_kivy/all_color.json", 'r') as f:
+    with open("jsons/all_color.json", 'r') as f:
         main : dict = json.load(f)
         color : str = main.get(string.title())
     if not color:

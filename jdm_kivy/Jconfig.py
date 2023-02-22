@@ -7,17 +7,16 @@ class JDMConfig:
         'display_fps' : False,
         'root_clock' : False,
     }
-    
     @staticmethod
     def __get_original_config(name: str): return JDMConfig.__original_config.get(name)
 
     @staticmethod
     def __change_config(name: str, value: any) -> None:
         if name in JDMConfig.__get_all_config_name():
-            with open(f"jdm_kivy/config.json") as f:
+            with open(f"jsons/config.json") as f:
                 config = json.load(f)
             config[name] = value
-            with open(f"jdm_kivy/config.json", "w") as f:
+            with open(f"jsons/config.json", "w") as f:
                 json.dump(config, f, indent=2)
         else: JDMLogger.log_config_warning(f"'name'({name}) is not 'class'(JDMConfig)")
 
@@ -25,7 +24,7 @@ class JDMConfig:
     def reset(name: str): JDMConfig.__change_config(name, JDMConfig.__get_original_config(name))
     @staticmethod
     def reset_all():
-        with open(f"jdm_kivy/config.json", "w") as f:
+        with open(f"jsons/config.json", "w") as f:
             json.dump(JDMConfig.__original_config, f, indent=2)
     
     @staticmethod

@@ -14,10 +14,10 @@ from kivy.core.text import LabelBase
 
 LabelBase.register(
     name="consolas",
-    fn_regular="jdm_kivy/assets/font/consolas/consolas_regular.ttf",
-    fn_bold="jdm_kivy/assets/font/consolas/consolas_bold.ttf",
-    fn_italic="jdm_kivy/assets/font/consolas/consolas_italic.ttf",
-    fn_bolditalic="jdm_kivy/assets/font/consolas/consolas_italic_bold.ttf")
+    fn_regular="assets/font/consolas/consolas_regular.ttf",
+    fn_bold="assets/font/consolas/consolas_bold.ttf",
+    fn_italic="assets/font/consolas/consolas_italic.ttf",
+    fn_bolditalic="assets/font/consolas/consolas_italic_bold.ttf")
 
 class JDMRootManager(ScreenManager):
     
@@ -39,7 +39,7 @@ class JDMRootManager(ScreenManager):
         self.elapseTime = None
         self.current_screen : JDMScreen
         self.__private_variable()
-        with open(f"jdm_kivy/config.json") as f: self.__config = json.load(f)
+        with open(f"jsons/config.json") as f: self.__config = json.load(f)
         if self.__config.get("root_clock"): self._main_Clock = Clock.schedule_interval(self.update, 1/60)
         Window.bind(on_keyboard=self.hook_keyboard)
 
@@ -113,7 +113,6 @@ class JDMApp(App):
             Window.size = size
             Window.left = 1
             Window.top = 30
-        else: orientation.set_portrait()
         self.root: JDMRootManager = manager if manager else JDMRootManager()
         self.title = title if title else __class__.__name__.removesuffix('App')
         JDMLogger.log_start_app(f"{self.title} is starting...")
