@@ -4,7 +4,7 @@
 title = JDM-Calculator
 
 # (str) Package name
-package.name = JDMCalculator
+package.name = jdmCalculator
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.jdm.calculator
@@ -60,7 +60,7 @@ orientation = portrait
 #
 
 #
-# author = © Copyright Info
+# author = ï¿½ Copyright Info
 
 # change the major version of python used by the app
 osx.python_version = 3
