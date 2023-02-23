@@ -2,6 +2,7 @@ from __future__ import print_function
 from jdm_kivy import *
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
 
 class CustomButton(JDMWidget):
 
@@ -55,7 +56,7 @@ class MainField(JDMWidget):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.size = self.root.size
+        self.size = Window.size
         JDM_addTitle(self, 'JDM Calculator', Window.height*0.05, JDM_getColor('JDM'), JDM_getColor('white'), dp(24))
         self.display_all_Modes()
         self.display_mode1_all_buttons()
