@@ -5,11 +5,10 @@ from kivy.utils import get_color_from_hex as GetColor
 from kivy.graphics import Rectangle, Color
 
 def JDM_getColor(string: str) -> str:
-    with open("all_color.json", 'r') as f:
+    with open("jsons/all_color.json", 'r') as f:
         main : dict = json.load(f)
         color : str = main.get(string.title())
-    if not color: return "#ffffff"
-    return color
+    return color if color else "#ffffff"
 
 def JDM_addTitle(widget: JDMWidget, text: str, height: float,
              background_color: str, foreground_color: str, font_size: int or str):

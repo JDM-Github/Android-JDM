@@ -1,3 +1,4 @@
+from kivy.app import App
 from kivy.uix.label import Label
 
 class JDMLabel(Label):
@@ -8,3 +9,4 @@ class JDMLabel(Label):
         self.valign = 'center'
         self.halign = 'center'
         super().__init__(**kwargs)
+        self.root = App.get_running_app().root
