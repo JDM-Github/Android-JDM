@@ -7,7 +7,7 @@ from kivy.utils import get_color_from_hex as GetColor, get_hex_from_color as Get
 from kivy.metrics import sp, dp
 from .Jwidget import JDMWidget
 from .Jscreen import JDMScreen
-from .Jconfig import JDMConfig
+# from .Jconfig import JDMConfig
 from .Jlabel import JDMLabel
 from .Jimage import JDMImage
 from .Jfunctions import JDM_png_to_pdf, JDM_png_to_pdf_list, JDM_addTitle, MathMMW, JDM_getColor

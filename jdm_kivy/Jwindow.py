@@ -39,8 +39,6 @@ class JDMRootManager(ScreenManager):
         self.elapseTime = None
         self.current_screen : JDMScreen
         self.__private_variable()
-        with open(f"jsons/config.json") as f: self.__config = json.load(f)
-        if self.__config.get("root_clock"): self._main_Clock = Clock.schedule_interval(self.update, 1/60)
         Window.bind(on_keyboard=self.hook_keyboard)
 
     def keyboard_down(self, window, scancode=None, key=None, keyAscii=None, *args):
@@ -70,13 +68,6 @@ class JDMRootManager(ScreenManager):
         if code == 'escape':
             return self.current_screen.handleBackButton()
         return True
-
-    def update(self, dt: float):
-        self.elapseTime = dt
-
-        if self.__config.get("display_fps"):
-            if JDMApp.get_running_app(): JDMApp.get_running_app().title = (
-                JDMApp.get_running_app()._main_title + f" -> FPS: {(1 / self.elapseTime):.2f}")
     
     def __private_variable(self):
         self.__adding_screen = False
