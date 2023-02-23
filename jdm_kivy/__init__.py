@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy import platform
-from .Jwindow import JDMApp, Window, platform, Clock, JDMRootManager, BooleanProperty, ReferenceListProperty
+from .Jwindow import Window, platform, Clock, JDMRootManager, BooleanProperty, ReferenceListProperty
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
 from kivy.graphics import Line, Rectangle, RoundedRectangle, Color, Ellipse, Triangle
 from kivy.utils import get_color_from_hex as GetColor, get_hex_from_color as GetHex, get_random_color as GetRandom
