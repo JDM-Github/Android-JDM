@@ -1,4 +1,4 @@
-name: JDMCalculator
+name: JDM_template
 on:
   workflow_dispatch
 
@@ -37,5 +37,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: JDMCalculator-0.0.2
+          name: JDM_template-0.0.1
           path: ${{ steps.buildozer.outputs.filename }}

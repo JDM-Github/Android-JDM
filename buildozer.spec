@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = JDM-Calculator
+title = JDM-Template
 
 # (str) Package name
-package.name = JDMCalculator
+package.name = JDM_template
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.jdm.calculator
+package.domain = org.jdm.template
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -29,7 +29,7 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json
 # source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.0.2
+version = 0.0.1
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]

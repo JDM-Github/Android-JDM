@@ -1,14 +1,14 @@
 {
     "title": {
-        "Text": "JDM-Calculator",
+        "Text": "JDM-Template",
         "Activate": true
     },
     "package.name": {
-        "Text": "JDMCalculator",
+        "Text": "JDM_template",
         "Activate": true
     },
     "package.domain": {
-        "Text": "org.jdm.calculator",
+        "Text": "org.jdm.template",
         "Activate": true
     },
     "source.dir": {
@@ -36,7 +36,7 @@
         "Activate": false
     },
     "version": {
-        "Text": "0.0.2",
+        "Text": "0.0.1",
         "Activate": true
     },
     "version.regex": {
