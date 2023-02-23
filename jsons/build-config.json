@@ -1,14 +1,14 @@
 {
     "title": {
-        "Text": "JDM-Template",
+        "Text": "JDM-Calculator",
         "Activate": true
     },
     "package.name": {
-        "Text": "JDM_template",
+        "Text": "JDM_calculator",
         "Activate": true
     },
     "package.domain": {
-        "Text": "org.jdm.template",
+        "Text": "org.jdm.calculator",
         "Activate": true
     },
     "source.dir": {
