@@ -201,31 +201,29 @@ class MainField(JDMWidget):
                         if text == '-' and (new_text[index-1] in self.all_operations or index == 0): continue
                         operation_index = index
                         break
-            if operation_index is not None:
-                already = False
-                for text_index in reversed(new_text[:operation_index]):
-                    if text_index in self.all_operations or already:
-                        if already is False and text_index == '-':
-                            first_number = text_index + first_number
-                            already = True
-                            continue
+            if operation_index is None: break
+            already = False
+            for text_index in reversed(new_text[:operation_index]):
+                if text_index in self.all_operations or already:
+                    if already is False and text_index == '-':
+                        first_number = text_index + first_number
                         already = True
-                        first = text_index + first
-                    elif text_index.isdigit() or text_index == '.': first_number = text_index + first_number
-                already = False
-                for text_index in new_text[operation_index+1:]:
-                    if text_index in self.all_operations or already:
-                        if not second_number and text_index == '-' and already is False:
-                            second_number += text_index
-                            continue
-                        already = True
-                        second += text_index
-                    elif text_index.isdigit() or text_index == '.': second_number += text_index
-                evaluation = self.calculate(first_number, second_number, new_text[operation_index])
-                if evaluation == 'ERROR': return 'ERROR'
-                new_text = first + self.calculate(first_number, second_number, new_text[operation_index]) + second
-                continue
-            break
+                        continue
+                    already = True
+                    first = text_index + first
+                elif text_index.isdigit() or text_index == '.': first_number = text_index + first_number
+            already = False
+            for text_index in new_text[operation_index+1:]:
+                if text_index in self.all_operations or already:
+                    if not second_number and text_index == '-' and already is False:
+                        second_number += text_index
+                        continue
+                    already = True
+                    second += text_index
+                elif text_index.isdigit() or text_index == '.': second_number += text_index
+            evaluation = self.calculate(first_number, second_number, new_text[operation_index])
+            if evaluation == 'ERROR': return 'ERROR'
+            new_text = first + self.calculate(first_number, second_number, new_text[operation_index]) + second
         return new_text
 
     def separate_evaluation(self, new_text: str):
