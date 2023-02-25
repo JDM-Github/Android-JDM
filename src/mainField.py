@@ -2,7 +2,7 @@ from jdm_kivy import *
 
 class MainScreen(JDMScreen): ...
 class MainField(JDMWidget):
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(JDMLabel(
