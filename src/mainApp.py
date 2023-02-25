@@ -1,3 +1,12 @@
+def _register_all_label():
+    from kivy.core.text import LabelBase
+    LabelBase.register(
+        name="consolas",
+        fn_regular="assets/font/consolas/consolas_regular.ttf",
+        fn_bold="assets/font/consolas/consolas_bold.ttf",
+        fn_italic="assets/font/consolas/consolas_italic.ttf",
+        fn_bolditalic="assets/font/consolas/consolas_italic_bold.ttf")
+
 from jdm_kivy import *
 from kivy.app import App
 from plyer import orientation
@@ -6,6 +15,7 @@ class JDMApp(App):
 
     def __init__(self, title: str = None, size: list = (500, 500), manager: JDMRootManager=None, **kwargs):
         super().__init__(**kwargs)
+        _register_all_label()
         if not platform == 'android':
             Window.size = size
             Window.left = 1
