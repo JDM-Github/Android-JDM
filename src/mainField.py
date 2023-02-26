@@ -1,8 +1,10 @@
 from __future__ import print_function
+import math
 from jdm_kivy import *
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
+from kivy.core.clipboard import Clipboard
 
 class MainScreen(JDMScreen): ...
 class CustomButton(JDMWidget):
@@ -90,12 +92,9 @@ class MainField(JDMWidget):
         self.mode_scroll.bar_color = GetColor('00000000')
         self.mode_scroll.bar_inactive_color = GetColor('00000000')
         self.all_modes.add_widget(CustomButton('Simple', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_modes.add_widget(CustomButton('Scientific', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_modes.add_widget(CustomButton('test', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_modes.add_widget(CustomButton('test', fz=dp(10), size_hint_x=None, width=Window.width/5))
         self.mode_scroll.add_widget(self.all_modes)
         self.add_widget(self.mode_scroll)
-    
+
     def display_utilities(self):
         self.all_util = GridLayout(size_hint_x=None, rows=1, spacing=dp(8), padding=dp(8))
         self.all_util.bind(minimum_width=self.all_util.setter('width'))
@@ -106,12 +105,12 @@ class MainField(JDMWidget):
         self.util_scroll.bar_inactive_color = GetColor('00000000')
         self.all_util.add_widget(CustomButton('Sound', fz=dp(10), size_hint_x=None, width=Window.width/5))
         self.all_util.add_widget(CustomButton('History', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_util.add_widget(CustomButton('Copy', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_util.add_widget(CustomButton('Cut', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_util.add_widget(CustomButton('Paste', fz=dp(10), size_hint_x=None, width=Window.width/5))
+        self.all_util.add_widget(CustomButton('Copy', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.copy_text))
+        self.all_util.add_widget(CustomButton('Cut', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.cut_text))
+        self.all_util.add_widget(CustomButton('Paste', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.paste_text))
         self.util_scroll.add_widget(self.all_util)
         self.add_widget(self.util_scroll)
-    
+
     def display_mode1_all_buttons(self):
         self.grid = GridLayout(
             cols=4, rows=7, spacing=dp(8), padding=dp(8),
@@ -120,15 +119,15 @@ class MainField(JDMWidget):
         self.grid.add_widget(CustomButton('(', JDM_getColor('JDM'), func_bind=lambda : self.add_text('(')))
         self.grid.add_widget(CustomButton(')', JDM_getColor('JDM'), func_bind=lambda : self.add_text(')')))
         self.grid.add_widget(CustomButton('^', JDM_getColor('JDM'), func_bind=lambda : self.add_text('^')))
-        self.grid.add_widget(CustomButton('None', JDM_getColor('JDM')))
+        self.grid.add_widget(CustomButton('√', JDM_getColor('JDM'), func_bind=lambda : self.add_text('√')))
         self.grid.add_widget(CustomButton('MC', JDM_getColor('JDM')))
         self.grid.add_widget(CustomButton('M+', JDM_getColor('JDM')))
         self.grid.add_widget(CustomButton('M-', JDM_getColor('JDM')))
         self.grid.add_widget(CustomButton('MR', JDM_getColor('JDM')))
         self.grid.add_widget(CustomButton('AC', JDM_getColor('JDM'), func_bind=self.clear_text))
         self.grid.add_widget(CustomButton('<-', JDM_getColor('JDM'), func_bind=self.del_text))
-        self.grid.add_widget(CustomButton('+/-', JDM_getColor('JDM')))
-        self.grid.add_widget(CustomButton('/', JDM_getColor('JDM'), func_bind=lambda : self.add_text('/')))
+        self.grid.add_widget(CustomButton('±', JDM_getColor('JDM'), func_bind=self.change_sign))
+        self.grid.add_widget(CustomButton('÷', JDM_getColor('JDM'), func_bind=lambda : self.add_text('÷')))
         self.grid.add_widget(CustomButton('7', func_bind=lambda : self.add_text('7')))
         self.grid.add_widget(CustomButton('8', func_bind=lambda : self.add_text('8')))
         self.grid.add_widget(CustomButton('9', func_bind=lambda : self.add_text('9')))
@@ -147,23 +146,132 @@ class MainField(JDMWidget):
         self.grid.add_widget(CustomButton('=', JDM_getColor('JDM'), func_bind=lambda : self.evaluate(self.main_textinput.main_label.text)))
         self.add_widget(self.grid)
 
-    def add_text(self, text):
-        self.main_textinput.main_label.text += text
+    def add_text(self, text, auto_eval=True):
+        if text in self.all_operations:
+            if text == '-' and (not self.current_text[self.all_index] or self.current_text[self.all_index][-1] in '()'):
+                self.current_text[self.all_index] += text
+            elif self.current_text[self.all_index] and self.current_text[self.all_index][-1] in self.all_operations:
+                if text == '-' and self.current_text[self.all_index][-1] != '-':
+                    self.current_text[self.all_index] = self.current_text[self.all_index][:-1]
+                    self.current_text[self.all_index] += text
+                else:
+                    self.current_text[self.all_index] = str()
+                    self.all_index -= 1
+                    self.current_text[self.all_index] = self.current_text[self.all_index][:-1]
+                    self.current_text[self.all_index] += text
+                    self.all_index += 1
+            elif not self.current_text[self.all_index]:
+                self.current_text[self.all_index] = str()
+                self.all_index -= 1
+                self.current_text[self.all_index] = self.current_text[self.all_index][:-1]
+                self.current_text[self.all_index] += text
+                self.all_index += 1
+            else:
+                self.all_index += 2
+                self.current_text.append(text)
+                self.current_text.append(str())
+        else:
+            if text in ')':
+                if (self.current_text[self.all_index]
+                    and not self.current_text[self.all_index][-1] in self.all_operations
+                    and not self.current_text[self.all_index][-1] == '('):
+                    if self.main_textinput.main_label.text.count('(') > self.main_textinput.main_label.text.count(')'):
+                        self.current_text[self.all_index] += text
+            elif text == '.':
+                if self.current_text[self.all_index].find('.') == -1:
+                    self.current_text[self.all_index] += text
+            elif text in self.all_functions:
+                if not (self.string_have(self.current_text[self.all_index], '1234567890x÷+-^'+self.all_functions)):
+                    self.current_text[self.all_index] += text
+            else: self.current_text[self.all_index] += text
+
+        self.main_textinput.main_label.text = ''.join(self.current_text)
         self.main_textinput.scroll.scroll_x = 1
-        self.evaluate(self.main_textinput.main_label.text, True)
+        if auto_eval: self.evaluate(self.main_textinput.main_label.text, True)
     
+    def string_have(self, new_text: str, string: str):
+        for text in new_text:
+            if text in string: return True
+        return False        
+
     def del_text(self):
-        self.main_textinput.main_label.text = self.main_textinput.main_label.text[:len(self.main_textinput.main_label.text)-1]
+        if self.current_text[self.all_index]:
+            self.current_text[self.all_index] = self.current_text[self.all_index][:-1]
+        else:
+            if self.all_index > 0:
+                self.current_text = self.current_text[:-2]
+                self.all_index -= 2
+
+        self.main_textinput.main_label.text = ''.join(self.current_text)
         self.main_textinput.scroll.scroll_x = 1
         self.evaluate(self.main_textinput.main_label.text, True)
 
     def clear_text(self):
         self.main_textinput.main_label.text = ''
         self.main_textinput.scroll.scroll_x = 1
+        self.all_index = 0
+        self.current_text : list[str] = [str()]
         self.evaluate(self.main_textinput.main_label.text, True)
+
+    def change_sign_function(self, string: str):
+        already = False
+        end_it = False
+        num_str = str()
+        new_str = str() 
+        for text in reversed(string):
+            if end_it: pass
+            elif already is False:
+                if text.isdigit():
+                    already = True
+                    num_str = text + num_str
+            else:
+                if text in self.all_operations + '()' + self.all_functions:
+                    end_it = True
+                    if text == '-': num_str = text + num_str
+                    if float(num_str) >= 0:
+                        new_str = '-' + new_str
+                    else: continue
+                else: num_str = text + num_str
+            new_str = text + new_str
+        if end_it is False and already:
+            if float(num_str) >= 0:
+                new_str = '-' + new_str
+            else: new_str = new_str[1:]
+        return new_str
+
+    def change_sign(self):
+        if self.current_text[self.all_index]:
+            self.current_text[self.all_index] = self.change_sign_function(self.current_text[self.all_index])
+            self.main_textinput.main_label.text = ''.join(self.current_text)
+            self.main_textinput.scroll.scroll_x = 1
+            self.evaluate(self.main_textinput.main_label.text, True)
     
+    def copy_text(self):
+        if self.main_textinput.main_label.text:
+            Clipboard.copy(self.main_textinput.main_label.text)
+        else: Clipboard.copy('0')
+
+    def cut_text(self):
+        self.copy_text()
+        self.clear_text()
+
+    def paste_text(self):
+        old_text = self.main_textinput.main_label.text
+        self.clear_text()
+        if Clipboard.paste():
+            new_text = self.clean_text(Clipboard.paste())
+            for text in old_text+new_text:
+                self.add_text(text, False)
+        print(self.current_text)
+        self.evaluate(self.main_textinput.main_label.text, True)
+
     def all_variables(self):
-        self.all_operations = 'x/+-^'
+        self.all_operations = 'x÷+-^'
+        self.all_functions = '√'
+        self.real_string = str()
+        self.all_index = 0
+        self.current_text : list[str] = [str()]
+        self.already_have_dot = str()
 
     def add_str(self, str1: str, str2: str) -> str:
         try: return str(float(str1) + float(str2))
@@ -180,15 +288,21 @@ class MainField(JDMWidget):
     def pow_str(self, str1: str, str2: str) -> str:
         try: return str(pow(float(str1), float(str2)))
         except: return "ERROR"
+    def sqrt_str(self, str1: str) -> str:
+        try: return str(math.sqrt(float(str1)))
+        except: return "ERROR"
 
     def calculate(self, str1: str, str2: str, operation: str) -> str:
         if operation == '+': return self.add_str(str1, str2)
         if operation == '-': return self.min_str(str1, str2)
         if operation == 'x': return self.mul_str(str1, str2)
-        if operation == '/': return self.div_str(str1, str2)
+        if operation == '÷': return self.div_str(str1, str2)
         if operation == '^': return self.pow_str(str1, str2)
     
-    def find_and_calculate(self, new_text: str, operation: str = 'x/'):
+    def calculate2(self, str1: str, operation: str) -> str:
+        if operation == '√': return self.sqrt_str(str1)
+    
+    def find_and_calculate(self, new_text: str, operation: str) -> str:
         while True:
             first = str()
             second = str()
@@ -223,10 +337,10 @@ class MainField(JDMWidget):
                 elif text_index.isdigit() or text_index == '.': second_number += text_index
             evaluation = self.calculate(first_number, second_number, new_text[operation_index])
             if evaluation == 'ERROR': return 'ERROR'
-            new_text = first + self.calculate(first_number, second_number, new_text[operation_index]) + second
+            new_text = self.clean_text(first + evaluation + second)
         return new_text
 
-    def separate_evaluation(self, new_text: str):
+    def separate_evaluation(self, new_text: str) -> str:
         while True:
             index_1 = None
             index_2 = None
@@ -248,39 +362,78 @@ class MainField(JDMWidget):
                 break
             elif index_2 is not None:
                 first = new_text[index_2+1:]
-                if first and first[0].isdigit(): first = 'x' + first
-                new_text = first + new_text[:index_2]
+                if first and first[0].isdigit(): first = 'x(' + first
+                new_text = '(' + first + new_text[:index_2]
                 break
             else: break
         return new_text
 
-    def clean_text(self, string: str): return ''.join([text for text in string if text in ('1234567890()-+/x.^')])
+    def function_calculate(self, new_text: str, func_sign: str):
+        while True:
+            first = str()
+            first_number = str()
+            function_index = None
+            if function_index is None:
+                for index, text in enumerate(new_text):
+                    if text in func_sign:
+                        if text == '-' and (new_text[index-1] in self.all_operations or index == 0): continue
+                        function_index = index
+                        break
+            if function_index is None: break
+            already = False
+            for text_index in new_text[function_index+1:]:
+                if text_index in self.all_operations or already:
+                    if not first_number and text_index == '-' and already is False:
+                        first_number += text_index
+                        continue
+                    already = True
+                    first += text_index
+                elif text_index.isdigit() or text_index == '.': first_number += text_index
+            evaluation = self.calculate2(first_number, new_text[function_index])
+            if evaluation == 'ERROR': return 'ERROR'
+            new_text = self.clean_text(new_text[:function_index] + evaluation + first)
+        return new_text
+
+    def clean_text(self, string: str): return ''.join([text for text in string if text in '1234567890().'+self.all_functions+self.all_operations])
     def set_scroll_box(self):
         self.main_textinput.scroll.scroll_x = 1
         self.result_textinput.scroll.scroll_x = 1
 
+    def equal_set_all_tracker(self):
+        self.all_index = 0
+        self.current_text = [self.main_textinput.main_label.text]
+
+    def error_manager(self, result, result_box):
+        self.result_textinput.main_label.text = result
+        if result_box is False:
+            self.main_textinput.main_label.text = result if result != 'ERROR' else '0'
+            self.equal_set_all_tracker()
+        self.set_scroll_box()
+
     def evaluate(self, string: str, result_box = False):
         new_text = self.clean_text(string)
         new_text = self.separate_evaluation(new_text)
+
         new_text = self.find_and_calculate(new_text, '^')
-        new_text = self.find_and_calculate(new_text, 'x/')
         if new_text == 'ERROR':
-            self.result_textinput.main_label.text = 'ERROR'
-            if result_box is False: self.main_textinput.main_label.text = '0'
-            self.set_scroll_box()
+            self.error_manager(new_text, result_box)
+            return 'ERROR'
+        new_text = self.function_calculate(new_text, '√')
+        if new_text == 'ERROR':
+            self.error_manager(new_text, result_box)
+            return 'ERROR'
+        new_text = self.find_and_calculate(new_text, 'x÷')
+        if new_text == 'ERROR':
+            self.error_manager(new_text, result_box)
             return 'ERROR'
         new_text = self.find_and_calculate(new_text, '+-')
         if new_text == 'ERROR':
-            self.result_textinput.main_label.text = 'ERROR'
-            if result_box is False: self.main_textinput.main_label.text = '0'
-            self.set_scroll_box()
+            self.error_manager(new_text, result_box)
             return 'ERROR'
+
         if string == self.main_textinput.main_label.text:
-            result = (new_text if not new_text or (len(new_text)==1 and new_text == '-')
+            try: result = (new_text if not new_text or (len(new_text)==1 and new_text == '-')
                       else (str(int(float(new_text))) if int(float(new_text)) == float(new_text) else new_text))
-            self.result_textinput.main_label.text = (result if not result or (len(new_text)==1 and new_text == '-')
-                else f'{int(float(result)) if int(float(result)) == float(result) else float(result):,}')
-            if result_box is False: self.main_textinput.main_label.text = result
-            self.set_scroll_box()
-            return
+            except: result = 'ERROR'
+            self.error_manager(result, result_box)
         return new_text
