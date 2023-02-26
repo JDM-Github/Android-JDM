@@ -148,6 +148,7 @@ class MainField(JDMWidget):
 
     def add_text(self, text, auto_eval=True):
         if text in self.all_operations:
+            if text == '/': text = '÷'
             if text == '-' and (not self.current_text[self.all_index] or self.current_text[self.all_index][-1] in '()'):
                 self.current_text[self.all_index] += text
             elif self.current_text[self.all_index] and self.current_text[self.all_index][-1] in self.all_operations:
@@ -245,7 +246,7 @@ class MainField(JDMWidget):
             self.main_textinput.main_label.text = ''.join(self.current_text)
             self.main_textinput.scroll.scroll_x = 1
             self.evaluate(self.main_textinput.main_label.text, True)
-    
+
     def copy_text(self):
         if self.main_textinput.main_label.text:
             Clipboard.copy(self.main_textinput.main_label.text)
@@ -266,7 +267,7 @@ class MainField(JDMWidget):
         self.evaluate(self.main_textinput.main_label.text, True)
 
     def all_variables(self):
-        self.all_operations = 'x÷+-^'
+        self.all_operations = 'x÷/+-^'
         self.all_functions = '√'
         self.real_string = str()
         self.all_index = 0
