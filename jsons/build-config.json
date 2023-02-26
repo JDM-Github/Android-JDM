@@ -36,7 +36,7 @@
         "Activate": false
     },
     "version": {
-        "Text": "0.0.3",
+        "Text": "0.0.4",
         "Activate": true
     },
     "version.regex": {
