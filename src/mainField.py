@@ -314,13 +314,13 @@ class MainField(JDMWidget):
             if operation_index is None:
                 for index, text in enumerate(new_text):
                     if text in operation:
-                        if text == '-' and (new_text[index-1] in self.all_operations or index == 0): continue
+                        if text == '-' and (new_text[index-1] in self.all_operations+self.all_functions or index == 0): continue
                         operation_index = index
                         break
             if operation_index is None: break
             already = False
             for text_index in reversed(new_text[:operation_index]):
-                if text_index in self.all_operations or already:
+                if text_index in self.all_operations+self.all_functions or already:
                     if already is False and text_index == '-':
                         first_number = text_index + first_number
                         already = True
@@ -330,7 +330,7 @@ class MainField(JDMWidget):
                 elif text_index.isdigit() or text_index == '.': first_number = text_index + first_number
             already = False
             for text_index in new_text[operation_index+1:]:
-                if text_index in self.all_operations or already:
+                if text_index in self.all_operations+self.all_functions or already:
                     if not second_number and text_index == '-' and already is False:
                         second_number += text_index
                         continue
@@ -378,13 +378,13 @@ class MainField(JDMWidget):
             if function_index is None:
                 for index, text in enumerate(new_text):
                     if text in func_sign:
-                        if text == '-' and (new_text[index-1] in self.all_operations or index == 0): continue
+                        if text == '-' and (new_text[index-1] in self.all_operations+self.all_functions or index == 0): continue
                         function_index = index
                         break
             if function_index is None: break
             already = False
             for text_index in new_text[function_index+1:]:
-                if text_index in self.all_operations or already:
+                if text_index in self.all_operations+self.all_functions or already:
                     if not first_number and text_index == '-' and already is False:
                         first_number += text_index
                         continue
@@ -394,6 +394,33 @@ class MainField(JDMWidget):
             evaluation = self.calculate2(first_number, new_text[function_index])
             if evaluation == 'ERROR': return 'ERROR'
             new_text = self.clean_text(new_text[:function_index] + evaluation + first)
+        return new_text
+
+    def last_function_calculate(self, new_text: str, func_sign: str):
+        while True:
+            first = str()
+            first_number = str()
+            function_index = None
+            if function_index is None:
+                for index, text in enumerate(new_text):
+                    if text in func_sign:
+                        if text == '-' and (new_text[index-1] in self.all_operations+self.all_functions or index == 0): continue
+                        function_index = index
+                        break
+            if function_index is None: break
+            already = False
+            for text_index in reversed(new_text[:function_index]):
+                if text_index in self.all_operations+self.all_functions or already:
+                    if already is False and text_index == '-':
+                        first_number = text_index + first_number
+                        already = True
+                        continue
+                    already = True
+                    first = text_index + first
+                elif text_index.isdigit() or text_index == '.': first_number = text_index + first_number
+            evaluation = self.calculate2(first_number, new_text[function_index])
+            if evaluation == 'ERROR': return 'ERROR'
+            new_text = self.clean_text(new_text[function_index+1:] + evaluation + first)
         return new_text
 
     def clean_text(self, string: str): return ''.join([text for text in string if text in '1234567890().'+self.all_functions+self.all_operations])
