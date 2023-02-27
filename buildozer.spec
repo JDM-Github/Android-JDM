@@ -1,19 +1,20 @@
 [app]
+# Build by JDM-Buildozer
 
 # (str) Title of your application
-title = JDM-Template
+title = JDM-Reviewer
 
 # (str) Package name
-package.name = JDM_template
+package.name = JDM_reviewer
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.jdm.template
+package.domain = org.jdm.reviewer
 
 # (str) Source code where the main.py live
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json
+source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json,wav,ico
 
 # (list) List of inclusions using pattern matching
 # source.include_patterns = assets/*,images/*.png
@@ -44,10 +45,10 @@ requirements = python3,kivy,plyer
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-# presplash.filename = %(source.dir)s/asset/presplash.png
+presplash.filename = %(source.dir)s/rassets/icon/presplash.png
 
 # (str) Icon of the application
-# icon.filename = %(source.dir)s/asset/icon.png
+icon.filename = %(source.dir)s/rassets/icon/mainicon.ico
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -60,7 +61,7 @@ orientation = portrait
 #
 
 #
-# author = ï¿½ Copyright Info
+# author = © Copyright Info
 
 # change the major version of python used by the app
 osx.python_version = 3

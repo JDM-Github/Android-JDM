@@ -1,14 +1,14 @@
 {
     "title": {
-        "Text": "JDM-Template",
+        "Text": "JDM-Reviewer",
         "Activate": true
     },
     "package.name": {
-        "Text": "JDM_template",
+        "Text": "JDM_reviewer",
         "Activate": true
     },
     "package.domain": {
-        "Text": "org.jdm.template",
+        "Text": "org.jdm.reviewer",
         "Activate": true
     },
     "source.dir": {
@@ -16,7 +16,7 @@
         "Activate": true
     },
     "source.include_exts": {
-        "Text": "py,png,jpg,kv,atlas,ttf,mp3,json",
+        "Text": "py,png,jpg,kv,atlas,ttf,mp3,json,wav,ico",
         "Activate": true
     },
     "source.include_patterns": {
@@ -56,12 +56,12 @@
         "Activate": false
     },
     "presplash.filename": {
-        "Text": "%(source.dir)s/asset/presplash.png",
-        "Activate": false
+        "Text": "%(source.dir)s/rassets/icon/presplash.png",
+        "Activate": true
     },
     "icon.filename": {
-        "Text": "%(source.dir)s/asset/icon.png",
-        "Activate": false
+        "Text": "%(source.dir)s/rassets/icon/mainicon.ico",
+        "Activate": true
     },
     "orientation": {
         "Text": "portrait",
