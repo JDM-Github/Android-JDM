@@ -56,11 +56,11 @@
         "Activate": false
     },
     "presplash.filename": {
-        "Text": "%(source.dir)s/rasset/icon/presplash.png",
+        "Text": "%(source.dir)s/rassets/icon/presplash.png",
         "Activate": true
     },
     "icon.filename": {
-        "Text": "%(source.dir)s/rasset/icon/main.ico",
+        "Text": "%(source.dir)s/rassets/icon/main.ico",
         "Activate": true
     },
     "orientation": {

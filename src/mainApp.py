@@ -14,6 +14,8 @@ from plyer import orientation
 class JDMApp(App):
 
     def __init__(self, title: str = None, size: list = (500, 500), manager: JDMRootManager=None, **kwargs):
+        self.icon = 'rassets/icon/main.ico'
+
         super().__init__(**kwargs)
         _register_all_label()
         if not platform == 'android':
