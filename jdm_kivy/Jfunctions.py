@@ -1,6 +1,5 @@
 import json
-from .Jwidget import JDMWidget
-from .Jlabel import JDMLabel
+from .Jwidget import JDMWidget, JDMLabel
 from kivy.utils import get_color_from_hex as GetColor
 from kivy.graphics import Rectangle, Color
 

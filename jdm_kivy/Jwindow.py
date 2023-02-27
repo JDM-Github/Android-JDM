@@ -6,8 +6,7 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty, BooleanProperty, NumericProperty, ReferenceListProperty, ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, TransitionBase, SlideTransition
 
-from .Jwidget import JDMWidget
-from .Jscreen import JDMScreen
+from .Jwidget import JDMWidget, JDMScreen
 
 class JDMRootManager(ScreenManager):
     
