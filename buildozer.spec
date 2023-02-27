@@ -14,7 +14,7 @@ package.domain = org.jdm.calculator
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json
+source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json,wav,ico
 
 # (list) List of inclusions using pattern matching
 # source.include_patterns = assets/*,images/*.png
@@ -30,7 +30,7 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,mp3,json
 # source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.0.4
+version = 0.1.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -45,10 +45,10 @@ requirements = python3,kivy,plyer
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-# presplash.filename = %(source.dir)s/asset/presplash.png
+presplash.filename = %(source.dir)s/rasset/icon/presplash.png
 
 # (str) Icon of the application
-# icon.filename = %(source.dir)s/asset/icon.png
+icon.filename = %(source.dir)s/rasset/icon/main.ico
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait

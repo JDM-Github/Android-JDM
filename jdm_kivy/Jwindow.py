@@ -89,6 +89,7 @@ class JDMRootManager(ScreenManager):
             setattr(self, screen_name, screen)
             screen = getattr(self, screen_name)
             if not screen.name: screen.name = screen_name
-            screen.add_widget(widget)
+            setattr(screen, screen_name, widget)
+            screen.add_widget(getattr(screen, screen_name))
             self.add_widget(screen)
             self.__adding_screen = False

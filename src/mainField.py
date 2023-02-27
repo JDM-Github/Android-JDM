@@ -1,4 +1,6 @@
 from __future__ import print_function
+import os
+import json
 import math
 import decimal
 from jdm_kivy import *
@@ -6,13 +8,21 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
 from kivy.core.clipboard import Clipboard
+from kivy.core.audio import SoundLoader
+sound_click = SoundLoader.load('assets/wav/click.wav')
 
-class MainScreen(JDMScreen): ...
+class MainScreen(JDMScreen):
+    
+    def handleBackButton(self) -> bool:
+        self.main.handleBackButton()
+        return super().handleBackButton()
+    
 class CustomButton(JDMWidget):
 
     def __init__(self, name, color='ffffff', func_bind = lambda: None, fz=dp(24), **kwargs):
         super().__init__(**kwargs)
         self.func_binder = func_bind
+        self.func_first = lambda : None
         self.clicked = False
         with self.canvas:
             Color(rgb=GetColor(JDM_getColor('JDM')), a=0.4)
@@ -29,12 +39,14 @@ class CustomButton(JDMWidget):
     def on_touch_down(self, touch):
         if (self._main_Rect.pos[0] <= touch.x <= (self._main_Rect.pos[0]+self._main_Rect.size[0]) and
             self._main_Rect.pos[1] <= touch.y <= (self._main_Rect.pos[1]+self._main_Rect.size[1])):
+            self.func_first()
             self.clicked = True
             self._main_Color.rgb = GetColor("333333")
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
         if self.clicked:
+            sound_click.play()
             self._main_Color.rgb = GetColor('111111')
             self.clicked = False
             self.func_binder()
@@ -82,6 +94,7 @@ class MainField(JDMWidget):
             JDM_getColor('white'),
             dp(24)
         )
+        self.set_config()
         self.all_variables()
         self.display_all_Modes()
         self.display_utilities()
@@ -90,6 +103,69 @@ class MainField(JDMWidget):
         self.result_textinput = CustomTextInput(True)
         self.add_widget(self.main_textinput)
         self.add_widget(self.result_textinput)
+        self.display_history()
+    
+    def set_config(self):
+        self.config = dict()
+        if os.path.exists('jsons/history.json'):
+            try:
+                with open('jsons/history.json', 'r') as f:
+                    self.config = json.load(f)
+            except json.JSONDecodeError: pass
+    
+    def display_history(self):
+        """
+        Creates a GridLayout that contains all your history.
+        """
+        self.all_history = GridLayout(
+            size_hint_y=None,
+            cols=1,
+            spacing=dp(8),
+            padding=dp(8)
+        )
+        self.all_history.bind(minimum_height=self.all_history.setter('height'))
+        self.history_scroll = ScrollView(
+            size=(Window.width, Window.height*0.95),
+            bar_color=GetColor('00000000'),
+            bar_inactive_color=GetColor('00000000')
+        )
+        if not self.config.get('Simple'):
+            self.config['Simple'] = {'History': []}
+        elif not self.config.get('Simple').get('History'):
+            self.config.get('Simple')['History'] = []
+        self._his_color = Color(rgb=GetColor(JDM_getColor('black')), a=0.8)
+        self._his_rect = Rectangle(size=Window.size)
+        self.history_scroll.add_widget(self.all_history)
+
+    def handleBackButton(self):
+        if self.open_history:
+            self.close_history_func()
+        else: App.get_running_app().stop()
+
+    def paste_history(self, new_text: str):
+        old_text = self.main_textinput.main_label.text
+        self.clear_text()
+        for text in old_text+new_text:
+            self.add_text(text, False)
+        self.evaluate(self.main_textinput.main_label.text, True)
+
+    def open_history_func(self):
+        self.open_history = True
+        self.canvas.add(self._his_color)
+        self.canvas.add(self._his_rect)
+        self.all_history.clear_widgets()
+        
+        for text in self.config.get('Simple').get('History'):
+            self.all_history.add_widget(CustomButton(text, fz=dp(16), size_hint_y=None, height=Window.height*0.05,
+                func_bind=lambda : self.paste_history(text)))
+
+        self.add_widget(self.history_scroll)
+
+    def close_history_func(self):
+        self.open_history = False
+        self.canvas.remove(self._his_color)
+        self.canvas.remove(self._his_rect)
+        self.remove_widget(self.history_scroll)
 
     def display_all_Modes(self):
         """
@@ -131,8 +207,13 @@ class MainField(JDMWidget):
             bar_color = GetColor('00000000'),
             bar_inactive_color = GetColor('00000000')
         )
-        self.all_util.add_widget(CustomButton('Sound', fz=dp(10), size_hint_x=None, width=Window.width/5))
-        self.all_util.add_widget(CustomButton('History', fz=dp(10), size_hint_x=None, width=Window.width/5))
+        self.all_util.add_widget(sound:=CustomButton('Sound', fz=dp(10), size_hint_x=None, width=Window.width/5))
+        sound.func_first = self.change_sound_volume
+        if self.config.get('Sound') is None:
+            self.config['Sound'] = 1
+
+        sound_click.volume = self.config.get('Sound')
+        self.all_util.add_widget(CustomButton('History', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.open_history_func))
         self.all_util.add_widget(CustomButton('Copy', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.copy_text))
         self.all_util.add_widget(CustomButton('Cut', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.cut_text))
         self.all_util.add_widget(CustomButton('Paste', fz=dp(10), size_hint_x=None, width=Window.width/5, func_bind=self.paste_text))
@@ -159,10 +240,10 @@ class MainField(JDMWidget):
         self.grid.add_widget(CustomButton(')', JDM_getColor('JDM'), func_bind=lambda : self.add_text(')')))
         self.grid.add_widget(CustomButton('^', JDM_getColor('JDM'), func_bind=lambda : self.add_text('^')))
         self.grid.add_widget(CustomButton('√', JDM_getColor('JDM'), func_bind=lambda : self.add_text('√')))
-        self.grid.add_widget(CustomButton('MC', JDM_getColor('JDM')))
-        self.grid.add_widget(CustomButton('M+', JDM_getColor('JDM')))
-        self.grid.add_widget(CustomButton('M-', JDM_getColor('JDM')))
-        self.grid.add_widget(CustomButton('MR', JDM_getColor('JDM')))
+        self.grid.add_widget(CustomButton('MC', JDM_getColor('JDM'), func_bind=self.mc_function))
+        self.grid.add_widget(CustomButton('M+', JDM_getColor('JDM'), func_bind=self.m_plus_function))
+        self.grid.add_widget(CustomButton('M-', JDM_getColor('JDM'), func_bind=self.m_minus_function))
+        self.grid.add_widget(CustomButton('MR', JDM_getColor('JDM'), func_bind=self.mr_function))
         self.grid.add_widget(CustomButton('AC', JDM_getColor('JDM'), func_bind=self.clear_text))
         self.grid.add_widget(CustomButton('<-', JDM_getColor('JDM'), func_bind=self.del_text))
         self.grid.add_widget(CustomButton('±', JDM_getColor('JDM'), func_bind=self.change_sign))
@@ -184,6 +265,11 @@ class MainField(JDMWidget):
         self.grid.add_widget(CustomButton('.', func_bind=lambda : self.add_text('.')))
         self.grid.add_widget(CustomButton('=', JDM_getColor('JDM'), func_bind=lambda : self.evaluate(self.main_textinput.main_label.text)))
         self.add_widget(self.grid)
+
+    def change_sound_volume(self):
+        self.config['Sound'] = int(not sound_click.volume)
+        sound_click.volume = self.config.get('Sound')
+        print(self.config.get('Sound'))
 
     def add_text(self, text: str, auto_eval: bool = True) -> None:
         """
@@ -370,20 +456,47 @@ class MainField(JDMWidget):
         """This method pastes the text from the clipboard to the label and updates the evaluation."""
         old_text = self.main_textinput.main_label.text
         self.clear_text()
-        if Clipboard.paste():
-            new_text = self.clean_text(Clipboard.paste())
-            for text in old_text+new_text:
-                self.add_text(text, False)
+        if Clipboard.paste(): new_text = self.clean_text(Clipboard.paste())
+        else: new_text = ''
+        for text in old_text+new_text:
+            self.add_text(text, False)
         self.evaluate(self.main_textinput.main_label.text, True)
 
     def all_variables(self):
         """All variables"""
+        self.memory = 0
+        self.open_history = False
         self.all_operations = '*x÷/+-^'
         self.all_functions = '√%'
         self.real_string = str()
         self.all_index = 0
         self.current_text : list[str] = [str()]
         self.already_have_dot = str()
+
+    def mc_function(self): self.memory = 0
+    def m_plus_function(self):
+        if self.result_textinput.main_label.text and self.result_textinput.main_label.text != 'ERROR':
+            self.memory += float(self.result_textinput.main_label.text)
+    def m_minus_function(self):
+        if self.result_textinput.main_label.text and self.result_textinput.main_label.text != 'ERROR':
+            self.memory -= float(self.result_textinput.main_label.text)
+    def mr_function(self):
+        old_text = self.main_textinput.main_label.text
+        self.clear_text()
+        if self.memory != 0:
+            new_text = str(self.memory)
+            try:
+                result = (new_text if not new_text or (len(new_text)==1 and new_text == '-')
+                      else (str(int(float(new_text))) if int(float(new_text)) == float(new_text) else new_text))
+                if self.count_decimals(result) > 8:
+                    result = result[:-(self.count_decimals(result)-8)]
+
+            except: result = ''
+        else: result = ''
+
+        for text in old_text+result:
+            self.add_text(text, False)
+        self.evaluate(self.main_textinput.main_label.text, True)
 
     def _remove_scientific_notation(self, num: float) -> str:
         """Remove scientific notation from a float while maintaining precision.
@@ -810,6 +923,12 @@ class MainField(JDMWidget):
         expression in the string. It returns the evaluated result as a string. If result_box is False, 
         it updates the main label of the main text input with the result. Otherwise, it updates the 
         result text input with the result. It also calls error_manager() and set_scroll_box() methods."""
+
+        if result_box is False:
+            if len(self.config.get('Simple').get('History')) >= 20:
+                self.config.get('Simple')['History'] = self.config.get('Simple').get('History')[:-1]
+            self.config.get('Simple').get('History').insert(0, self.main_textinput.main_label.text)
+
         new_text = self.clean_text(string)
         new_text = self.separate_evaluation(new_text)
 

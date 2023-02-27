@@ -16,7 +16,7 @@
         "Activate": true
     },
     "source.include_exts": {
-        "Text": "py,png,jpg,kv,atlas,ttf,mp3,json",
+        "Text": "py,png,jpg,kv,atlas,ttf,mp3,json,wav,ico",
         "Activate": true
     },
     "source.include_patterns": {
@@ -36,7 +36,7 @@
         "Activate": false
     },
     "version": {
-        "Text": "0.0.4",
+        "Text": "0.1.0",
         "Activate": true
     },
     "version.regex": {
@@ -56,12 +56,12 @@
         "Activate": false
     },
     "presplash.filename": {
-        "Text": "%(source.dir)s/asset/presplash.png",
-        "Activate": false
+        "Text": "%(source.dir)s/rasset/icon/presplash.png",
+        "Activate": true
     },
     "icon.filename": {
-        "Text": "%(source.dir)s/asset/icon.png",
-        "Activate": false
+        "Text": "%(source.dir)s/rasset/icon/main.ico",
+        "Activate": true
     },
     "orientation": {
         "Text": "portrait",
