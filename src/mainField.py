@@ -5,8 +5,9 @@ class MainScreen(JDMScreen): ...
 class CardBox(JDMWidget):
 
     __all_shadow_pos__ = ['n', 'l', 'r', 't', 'b', 'lt', 'lb', 'rt', 'rb']
-    shadow_pos = StringProperty('lb')
-    shadow_width = NumericProperty(0)
+    shadow_pos = StringProperty('n')
+    shadow_width = NumericProperty(dp(2))
+    shadow_opacity = NumericProperty(0.2)
     radius = ListProperty([10, 10, 10, 10])
     card_color = ListProperty([1, 1, 1, 1])
 
@@ -14,6 +15,7 @@ class CardBox(JDMWidget):
         super().__init__(**kwargs)
         if 'shadow_pos' in kwargs: self.shadow_pos = kwargs.get('shadow_pos')
         if 'shadow_width' in kwargs: self.shadow_width = kwargs.get('shadow_width')
+        if 'shadow_opacity' in kwargs: self.shadow_opacity = kwargs.get('shadow_opacity')
         if 'radius' in kwargs: self.radius = kwargs.get('radius')
         if 'card_color' in kwargs: self.card_color = kwargs.get('card_color')
 
@@ -27,9 +29,9 @@ class CardBox(JDMWidget):
 
     def _display_card(self):
         with self.canvas:
-            Color(rgba=GetColor('00000055'))
+            Color(rgb=GetColor('000000'), a=self.shadow_opacity)
             self._card_shadow = RoundedRectangle(radius=self.radius)
-            Color(rgba=GetColor('55555555'))
+            Color(rgb=GetColor('555555'), a=self.shadow_opacity)
             self._card_line = RoundedRectangle(radius=self.radius)
             self._card_col = Color(rgba=self.card_color)
             self._card_rect = RoundedRectangle(radius=self.radius)
@@ -41,14 +43,18 @@ class CardBox(JDMWidget):
         self._card_rect.size = self.size
         self._card_rect.pos = self.pos
         
-        self._card_shadow.size = self.size
+        self._card_shadow.size = self.size if self.shadow_pos != 'n' else (self.width+self.shadow_width, self.height+self.shadow_width)
         self._card_shadow.pos = (
-            self.x + (self.shadow_width if 'r' in self.shadow_pos else (-self.shadow_width if 'l' in self.shadow_pos else 0)),
-            self.y + (self.shadow_width if 't' in self.shadow_pos else (-self.shadow_width if 'b' in self.shadow_pos else 0)))
-        self._card_line.size = self.size
+            self.x + (self.shadow_width if 'r' in self.shadow_pos else (-self.shadow_width if 'l' in self.shadow_pos else
+                (-self.shadow_width/2 if self.shadow_pos == 'n' else 0))),
+            self.y + (self.shadow_width if 't' in self.shadow_pos else (-self.shadow_width if 'b' in self.shadow_pos else
+                (-self.shadow_width/2 if self.shadow_pos == 'n' else 0))))
+        self._card_line.size = self.size if self.shadow_pos != 'n' else (self.width+self.shadow_width/2, self.height+self.shadow_width/2)
         self._card_line.pos = (
-            self.x + (self.shadow_width/2 if 'r' in self.shadow_pos else (-self.shadow_width/2 if 'l' in self.shadow_pos else 0)),
-            self.y + (self.shadow_width/2 if 't' in self.shadow_pos else (-self.shadow_width/2 if 'b' in self.shadow_pos else 0)))
+            self.x + (self.shadow_width/2 if 'r' in self.shadow_pos else (-self.shadow_width/2 if 'l' in self.shadow_pos else
+                (-self.shadow_width/4 if self.shadow_pos == 'n' else 0))),
+            self.y + (self.shadow_width/2 if 't' in self.shadow_pos else (-self.shadow_width/2 if 'b' in self.shadow_pos else
+                (-self.shadow_width/4 if self.shadow_pos == 'n' else 0))))
 
 class ShowButtonCard(CardBox):
     
@@ -56,7 +62,7 @@ class ShowButtonCard(CardBox):
         super().__init__(**kwargs)
         self.func_binder = func_bind
         self.card_color = GetColor('598baf')
-        self.main_label = JDMLabel(text=text)
+        self.main_label = JDMLabel(text=text, font_size=dp(13))
         self.add_widget(self.main_label)
         self.size = Window.width*0.3, Window.height*0.03
     
@@ -71,7 +77,6 @@ class TopicCard(CardBox):
         super().__init__(**kwargs)
         self.size_hint_y=None
         self.height=Window.height*0.07
-        # self.shadow_width=dp(4)
         self.card_color = GetColor('0395c5')
         self.main_label = JDMLabel(bold=True, text=text, font_size=dp(13))
         self.card_info = ShowButtonCard()
@@ -148,6 +153,7 @@ class MainField(JDMWidget):
         """
         self.grid.add_widget(MainCardBox(size_hint_y=None, card_color=GetColor(JDM_getColor('JDM')),
                                          height=Window.height*0.15))
+        self.grid.add_widget(TopicCard("JDMSpecial -> Basic Programming"))
         self.grid.add_widget(TopicCard("CS102 -> Object oriented Programming"))
         self.grid.add_widget(TopicCard("IT102 -> Information Management"))
         self.grid.add_widget(TopicCard("IT201 -> Data Structures and Algorithms"))
