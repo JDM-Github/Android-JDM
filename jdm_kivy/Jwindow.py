@@ -56,17 +56,16 @@ class JDMRootManager(ScreenManager):
 
     def hook_keyboard(self, _, key, *__):
         code = Window._keyboards.get("system").keycode_to_string(key)
-        if code == 'escape':
-            return self.current_screen.handleBackButton()
+        if code == 'escape': return self.current_screen.handleBackButton()
         return True
 
     def update(self, dt: float):
         self.elapseTime = dt
-
+        self.current_screen.update()
         if self.__config.get("display_fps"):
             if App.get_running_app(): App.get_running_app().title = (
                 App.get_running_app()._main_title + f" -> FPS: {(1 / self.elapseTime):.2f}")
-    
+
     def __private_variable(self):
         self.__adding_screen = False
 

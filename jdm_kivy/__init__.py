@@ -4,6 +4,6 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty, Lis
 from kivy.graphics import Line, Rectangle, RoundedRectangle, Color, Ellipse, Triangle
 from kivy.utils import get_color_from_hex as GetColor, get_hex_from_color as GetHex, get_random_color as GetRandom
 from kivy.metrics import sp, dp
-from .Jwidget import JDMWidget, JDMLabel, JDMScreen, JDMBoxLayout, JDMGridLayout, JDMImage, JDMScrollView, JDMTextInput
+from .Jwidget import JDMWidget, JDMLabel, JDMScreen, JDMBoxLayout, JDMGridLayout, JDMImage, JDMScrollView, JDMTextInput, CardBox
 from .Jconfig import JDMConfig
 from .Jfunctions import JDM_addTitle, JDM_getColor
