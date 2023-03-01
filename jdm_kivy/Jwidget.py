@@ -7,11 +7,14 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import Screen
+from kivy.effects.scroll import ScrollEffect
+from kivy.effects.dampedscroll import DampedScrollEffect
+
 
 from kivy.metrics import dp
 from kivy.graphics import RoundedRectangle, Color
 from kivy.utils import get_color_from_hex as GetColor
-from kivy.properties import StringProperty, NumericProperty, ListProperty
+from kivy.properties import StringProperty, NumericProperty, ListProperty, BooleanProperty
 
 class JDMScreen(Screen):
     
@@ -39,11 +42,28 @@ class JDMBoxLayout(BoxLayout):
         self.root = App.get_running_app().root
 
 class JDMScrollView(ScrollView):
+
+    remove_overlapped = BooleanProperty(False)
+    remove_scroll = BooleanProperty(False)
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.bind(
+            remove_overlapped=self.__change_effect,
+            remove_scroll=self.__change_effect,
+        )
+        self.__original_bar_color = self.bar_color
+        if 'remove_overlapped' in kwargs: self.remove_overlapped = kwargs.get('remove_overlapped')
+        if 'remove_scroll' in kwargs: self.remove_scroll = kwargs.get('remove_scroll')
+        self.__change_effect()
         self.root = App.get_running_app().root
 
+    def __change_effect(self, *_):
+        self.effect_cls = ScrollEffect if self.remove_overlapped else DampedScrollEffect
+        self.bar_color = '00000000' if self.remove_scroll else self.__original_bar_color
+
 class JDMTextInput(TextInput):
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.root = App.get_running_app().root
@@ -62,12 +82,16 @@ class JDMLabel(Label):
         super().__init__(**kwargs)
         self.root = App.get_running_app().root
 
+    def on_ref_press(self, ref):
+        if ref: getattr(self, ref)()
+        return super().on_ref_press(ref)
+
 class JDMImage(Image):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.root = App.get_running_app().root
 
-class CardBox(JDMWidget):
+class JDMCardBox(JDMWidget):
 
     __all_shadow_pos__ = ['n', 'l', 'r', 't', 'b', 'lt', 'lb', 'rt', 'rb']
     shadow_pos = StringProperty('n')
@@ -105,6 +129,10 @@ class CardBox(JDMWidget):
         if not self.shadow_pos in self.__all_shadow_pos__:
             raise KeyError(f"{self.shadow_pos} not in {self.__all_shadow_pos__}")
 
+        self._card_shadow.radius = self.radius
+        self._card_line.radius = self.radius
+        self._card_rect.radius = self.radius
+
         self._card_rect.size = self.size
         self._card_rect.pos = self.pos
         
@@ -120,3 +148,71 @@ class CardBox(JDMWidget):
                 (-self.shadow_width/4 if self.shadow_pos == 'n' else 0))),
             self.y + (self.shadow_width/2 if 't' in self.shadow_pos else (-self.shadow_width/2 if 'b' in self.shadow_pos else
                 (-self.shadow_width/4 if self.shadow_pos == 'n' else 0))))
+
+class JDMCode(JDMWidget):
+    
+    code_color = ListProperty([0.1, 0.1, 0.1, 1])
+    radius = ListProperty([10, 10, 10, 10])
+    text = StringProperty('')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if 'code_color' in kwargs: self.code_color = kwargs.get('code_color')
+        if 'radius' in kwargs: self.radius = kwargs.get('radius')
+        if 'text' in kwargs: self.text = kwargs.get('text')
+
+        self.max_width = 0
+        self._display_code()
+        self.bind(
+            size=self._change,
+            pos=self._change
+        )
+        self.bind(text=self._refresh_text)
+
+    def _refresh_text(self, *_):
+        index = 0
+        number = 1
+        self._all_line.clear()
+        self._all_line.append(f'{number: 3d}| ')
+        for s in self.text:
+            if s == '\n':
+                index += 1
+                number += 1
+                self._all_line.append(f'{number: 3d}| ')
+            else: self._all_line[index] += s
+
+        self.max_width = len(self._all_line[0])*(dp(10)*0.65)
+        self._main_grid.clear_widgets()
+        for line in self._all_line:
+            if self.max_width < len(line)*(dp(10)*0.65):
+                self.max_width = len(line)*(dp(10)*0.65)
+            self._main_grid.add_widget(JDMLabel(bold=True,
+                halign='left', text=line, size_hint_y=None, height=dp(10), font_size=dp(10)))
+        
+        self._main_grid.width = max(self.max_width, self._main_scroll.width)
+
+    def _display_code(self):
+        self._all_line : list[str] = list()
+        with self.canvas:
+            self._main_col = Color(rgba=self.code_color)
+            self._main_rect = RoundedRectangle(size=self.size, pos=self.pos, radius=self.radius)
+        self._main_grid = JDMGridLayout(size_hint_y=None, size_hint_x=None, cols=1, padding=dp(5))
+        self._main_grid.bind(minimum_height=self._main_grid.setter('height'))
+        self._main_scroll = JDMScrollView(remove_overlapped=True, remove_scroll=True, pos=self.pos)
+        self._main_scroll.always_overscroll = False
+        self._main_scroll.bind(width=lambda *_: setattr(self._main_grid, 'width', max(self.max_width, self._main_scroll.width)))
+        self._main_scroll.size = self.size
+        
+        self._refresh_text()
+        self._main_scroll.add_widget(self._main_grid)
+        self.add_widget(self._main_scroll)
+
+        self.bind(code_color=lambda *_: setattr(self._main_col, 'rgba', self.code_color))
+        self.bind(radius=lambda *_: setattr(self._main_rect, 'radius', self.radius))
+    
+    def _change(self, *_):
+        self._main_rect.radius = self.radius
+        self._main_rect.size = self.size
+        self._main_rect.pos = self.pos
+        self._main_scroll.size = self.size
+        self._main_scroll.pos = self.pos
