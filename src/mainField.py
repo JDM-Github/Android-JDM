@@ -288,10 +288,14 @@ class CodeExample(JDMWidget):
         
         if os.path.exists(path):
             all_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-            for f in all_files:
-                with open(path+f, 'r') as fi:
-                   self.all_text.append(fi.read())
-                self.all_lang.append(os.path.splitext(f)[1][1:])
+            if all_files:
+                for f in all_files:
+                    with open(path+f, 'r') as fi:
+                       self.all_text.append(fi.read())
+                    self.all_lang.append(os.path.splitext(f)[1][1:])
+            else:
+                self.all_lang.append('')
+                self.all_text.append('')
         else:
             self.all_lang.append('')
             self.all_text.append('')

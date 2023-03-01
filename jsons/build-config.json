@@ -16,7 +16,7 @@
         "Activate": true
     },
     "source.include_exts": {
-        "Text": "py,png,jpg,kv,atlas,ttf,mp3,json,wav,ico",
+        "Text": "py,c,cpp,java,js,png,jpg,kv,atlas,ttf,mp3,json,wav,ico",
         "Activate": true
     },
     "source.include_patterns": {
@@ -36,7 +36,7 @@
         "Activate": false
     },
     "version": {
-        "Text": "0.0.1",
+        "Text": "0.0.2",
         "Activate": true
     },
     "version.regex": {

@@ -37,5 +37,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: JDM_reviewer-0.0.1
+          name: JDM_reviewer-0.0.2
           path: ${{ steps.buildozer.outputs.filename }}
