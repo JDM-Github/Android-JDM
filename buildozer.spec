@@ -14,7 +14,7 @@ package.domain = org.jdm.reviewer
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = 
+source.include_exts = py,c,cpp,java,js,png,jpg,kv,atlas,ttf,mp3,json,wav,ico
 
 # (list) List of inclusions using pattern matching
 # source.include_patterns = assets/*,images/*.png
@@ -48,7 +48,7 @@ requirements = python3,kivy,plyer
 presplash.filename = %(source.dir)s/rassets/icon/presplash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/rassets/icon/mainicon.ico
+icon.filename = %(source.dir)s/rassets/icon/main.ico
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait

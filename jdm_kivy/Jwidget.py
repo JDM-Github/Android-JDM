@@ -152,20 +152,26 @@ class JDMCardBox(JDMWidget):
 class JDMCode(JDMWidget):
     
     code_color = ListProperty([0.1, 0.1, 0.1, 1])
+    font_size = NumericProperty(dp(14))
     radius = ListProperty([10, 10, 10, 10])
     text = StringProperty('')
+    color = ListProperty([1, 1, 1, 1])
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'code_color' in kwargs: self.code_color = kwargs.get('code_color')
+        if 'font_size' in kwargs: self.font_size = kwargs.get('font_size')
         if 'radius' in kwargs: self.radius = kwargs.get('radius')
         if 'text' in kwargs: self.text = kwargs.get('text')
+        if 'color' in kwargs: self.color = kwargs.get('color')
 
         self.max_width = 0
         self._display_code()
         self.bind(
             size=self._change,
-            pos=self._change
+            pos=self._change,
+            font_size=self._refresh_text,
+            color=self._refresh_text,
         )
         self.bind(text=self._refresh_text)
 
@@ -181,14 +187,14 @@ class JDMCode(JDMWidget):
                 self._all_line.append(f'{number: 3d}| ')
             else: self._all_line[index] += s
 
-        self.max_width = len(self._all_line[0])*(dp(10)*0.65)
+        self.max_width = len(self._all_line[0])*(self.font_size*0.65)
         self._main_grid.clear_widgets()
         for line in self._all_line:
-            if self.max_width < len(line)*(dp(10)*0.65):
-                self.max_width = len(line)*(dp(10)*0.65)
-            self._main_grid.add_widget(JDMLabel(bold=True,
-                halign='left', text=line, size_hint_y=None, height=dp(10), font_size=dp(10)))
-        
+            if self.max_width < len(line)*(self.font_size*0.65):
+                self.max_width = len(line)*(self.font_size*0.65)
+            self._main_grid.add_widget(JDMLabel(color=self.color,
+                halign='left', text=line, size_hint_y=None, height=self.font_size, font_size=self.font_size))
+
         self._main_grid.width = max(self.max_width, self._main_scroll.width)
 
     def _display_code(self):

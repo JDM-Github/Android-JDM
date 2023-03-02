@@ -1,7 +1,7 @@
 import random
 import json
 import os
-import glob
+from kivy.core.clipboard import Clipboard
 from jdm_kivy import *
 
 class MainScreen(JDMScreen):
@@ -290,15 +290,22 @@ class CodeExample(JDMWidget):
             all_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
             if all_files:
                 for f in all_files:
-                    with open(path+f, 'r') as fi:
-                       self.all_text.append(fi.read())
                     self.all_lang.append(os.path.splitext(f)[1][1:])
+                    with open(path+f, 'r') as fi:
+                       self.all_text.append(self.get_langauge(self.all_lang[-1]) + fi.read())
             else:
                 self.all_lang.append('')
                 self.all_text.append('')
         else:
             self.all_lang.append('')
             self.all_text.append('')
+
+    def get_langauge(self, lang):
+        if lang == 'py': return "# Python Implementation\n"
+        if lang == 'c': return "// C Implementation\n"
+        if lang == 'cpp': return "// C++ Implementation\n"
+        if lang == 'js': return "// JavaScript Implementation\n"
+        if lang == 'java': return "// Java Implementation\n"
 
     def change_language(self):
         self.index_nav += 1
@@ -315,7 +322,7 @@ class CodeExample(JDMWidget):
         with self.canvas:
             Color(rgb=GetColor(JDM_getColor('black')), a=0.5)
             Rectangle(size=Window.size)
-            Color(rgba=GetColor('0395c5'))
+            Color(rgba=GetColor(JDM_getColor('JDM')))
             self.rect = RoundedRectangle(
                 size=self.size, pos=self.pos,
                 radius=[10, 10, 10, 10])
@@ -327,6 +334,9 @@ class CodeExample(JDMWidget):
         )
         self.add_widget(self.change_button)
         self.code = JDMCode(
+            font_size=dp(11),
+            color=GetColor('ffffff'),
+            code_color=GetColor('0395c5'),
             text=self.all_text[self.index_nav],
             size=(self.width-dp(10), self.height*0.9-dp(10)),
             pos=(self.x+dp(5), self.y+dp(5))
@@ -335,7 +345,8 @@ class CodeExample(JDMWidget):
         self.add_widget(self.code)
         self.copy_button = ShowButtonCard(
             text='Copy',
-            pos=(self.x+self.width-(Window.width*0.3+dp(10)), self.y+dp(10))
+            pos=(self.x+self.width-(Window.width*0.3+dp(10)), self.y+dp(10)),
+            func_bind=lambda *_: Clipboard.copy(self.code.text)
         )
         self.add_widget(self.copy_button)
 
